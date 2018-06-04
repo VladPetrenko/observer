@@ -2,32 +2,34 @@
 
 class Observable {
   constructor() {
-    this.observers = [];
+    this._observers = [];
+    this._observersOnce = [];
   }
 
   subscribe(observer) {
-    this.observers.push(observer);
+    this._observers.push(observer);
+  }
+
+  subscribeOnce(observer) {
+   this._observersOnce.push(observer); 
   }
 
   unsubscribe(observer) {
-/*     let idx = this.observers.indexOf(observer);
-     if (idx != -1) {
-      return this.observers.splice(idx, 1);
-     }
-    return false*/
-    this.observers = this.observers.filter(subscriber => subscriber !== observer);
+     this._observers.splice(this._observers.indexOf(observer), 1)
+    // this.observers = this.observers.filter(subscriber => subscriber !== observer);
   }
 
   notify(data) {
-    this.observers.forEach(observer => observer(data));
+    this._observers.forEach(observer => observer(data));
+    this._observersOnce.forEach(observer => observer(data));
+    if(this._observersOnce){
+      this._observersOnce.length = 0;
+    }
   }
 
-  once() {
-   // 
-  }
 
   countObservers() {
-    // the number of observers
+    console.log(this._observers.length);
   }
 }
 
@@ -35,39 +37,44 @@ class Observable {
 
 class User {
   constructor(name) {
-    this.name = name;
-    this.info = this.post.bind(this);
+    this._name = name;
+    this.post = this.post.bind(this);
   }
 
    post(data) {
-    console.log(`${this.name} has a news post from Journalist about ${data}`);
+    console.log(`${this._name} has a news post from Journalist about ${data}`);
    }
   }
 
 class Journalist {
-    constructor(name) {
-        this.name = name;
-    }
-    
-    postMessage(data) {
-        return `${data}`;
-    }
+  constructor(obs) {
+    this._obs = obs;
+  }
+
+  postMessage(data = 'nothing') {
+    this._obs.notify(data)
+  }
 }
 
-	
-let obs = new Observable();
-let verge = new Journalist('Verge');
-let bloomberg = new Journalist('Bloomberg');
+let obs = new Observable('Observer');
+let verge = new Journalist(obs);
+
 let user1 = new User('John');
 let user2 = new User('Ed');
 let user3 = new User('Tom');
+let user4 = new User('Dima Once');
+let user5 = new User('Grisha Once');
+let user6 = new User('Katya Once');
 
-obs.subscribe(user1.info);
-obs.subscribe(user2.info);
-obs.subscribe(user3.info);
+obs.subscribe(user1.post);
+obs.subscribe(user2.post);
+obs.subscribe(user3.post);
+obs.subscribeOnce(user4.post);
+obs.subscribeOnce(user5.post);
+obs.subscribeOnce(user6.post);
 
-obs.notify(verge.postMessage('yohoo'));
+verge.postMessage();
 
-obs.unsubscribe(user3.info);
+obs.unsubscribe(user3.post);
 
-obs.notify(bloomberg.postMessage('sth new'));
+verge.postMessage('weather');
