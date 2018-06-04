@@ -10,6 +10,11 @@ class Observable {
   }
 
   unsubscribe(observer) {
+/*     let idx = this.observers.indexOf(observer);
+     if (idx != -1) {
+      return this.observers.splice(idx, 1);
+     }
+    return false*/
     this.observers = this.observers.filter(subscriber => subscriber !== observer);
   }
 
@@ -18,11 +23,11 @@ class Observable {
   }
 
   once() {
-
+   // 
   }
 
-  sth() {
-
+  countObservers() {
+    // the number of observers
   }
 }
 
@@ -30,12 +35,12 @@ class Observable {
 
 class User {
   constructor(name) {
-    this.userName = name;
+    this.name = name;
     this.info = this.post.bind(this);
   }
 
    post(data) {
-    console.log(`${this.userName} has a news post from Journalist about ${data}`);
+    console.log(`${this.name} has a news post from Journalist about ${data}`);
    }
   }
 
