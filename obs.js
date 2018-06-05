@@ -22,7 +22,7 @@ class Observable {
   notify(data) {
     this._observers.forEach(observer => observer(data));
     this._observersOnce.forEach(observer => observer(data));
-    if(this._observersOnce){
+    if(this._observersOnce.length > 0){
       this._observersOnce.length = 0;
     }
   }
@@ -52,7 +52,7 @@ class Journalist {
   }
 
   postMessage(data = 'nothing') {
-    this._obs.notify(data)
+    this._obs.notify(data);
   }
 }
 
